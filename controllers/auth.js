@@ -33,7 +33,7 @@ exports.signup = async (req, res, next) => {
             type
         });
         const result = await user.save();
-        res.status(201).json({ message: 'User created!', userId: result._id });
+        res.status(201).json({ success: true, message: 'User created!', userId: result._id });
     } catch (err) {
         if (!err.statusCode) {
             err.statusCode = 500;
@@ -70,6 +70,7 @@ exports.login = async (req, res, next) => {
             { expiresIn: '1h' }
         );
         res.status(200).json({
+            success: true,
             token: token,
             userId: loadedUser._id.toString() ,
             type: loadedUser.type,
