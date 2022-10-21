@@ -32,7 +32,6 @@ router.post(
         body('type')
             .trim()
             .not()
-            .isEmpty()
     ],
     signup
 );
