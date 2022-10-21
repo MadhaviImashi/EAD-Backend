@@ -8,8 +8,6 @@ require('dotenv').config();
 
 const app = express();
 
-
-// app.use(bodyParser.urlencoded()); // x-www-form-urlencoded <form>
 app.use(bodyParser.json()); // application/json
 
 app.use((req, res, next) => {
@@ -22,6 +20,7 @@ app.use((req, res, next) => {
     next();
 });
 
+// https://eadfuelapp.herokuapp.com/api/auth/register
 app.use('/api/auth', authRoutes);
 
 app.use((error, req, res, next) => {

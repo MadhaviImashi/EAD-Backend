@@ -23,6 +23,12 @@ const userSchema = new Schema({
     },
     type: {
         type: String,
+    },
+    vehicalType: {
+        type: String,
+    },
+    joinedTime: {
+        type: String
     }
 });
 
