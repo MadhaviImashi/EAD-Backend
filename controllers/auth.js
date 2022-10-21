@@ -19,6 +19,7 @@ exports.signup = async (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
     const mobile = req.body.mobile;
+    const vehicalType = req.body.vehicalType;
     const type = req.body.type;
 
     try {
@@ -30,6 +31,7 @@ exports.signup = async (req, res, next) => {
             firstName,
             lastName,
             mobile,
+            vehicalType,
             type
         });
         const result = await user.save();
