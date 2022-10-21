@@ -23,7 +23,7 @@ router.post(
         body('password')
             .trim()
             .isLength({ min: 5 }),
-        body('firstName')
+        body('name')
             .trim()
             .not()
             .isEmpty(),

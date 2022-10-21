@@ -14,8 +14,7 @@ exports.signup = async (req, res, next) => {
         throw error;
     }
 
-    const firstName = req.body.firstName;
-    const lastName = req.body.lastName;
+    const name = req.body.name;
     const email = req.body.email;
     const password = req.body.password;
     const mobile = req.body.mobile;
@@ -28,8 +27,7 @@ exports.signup = async (req, res, next) => {
         const user = new User({
             email,
             password: hashedPw,
-            firstName,
-            lastName,
+            name,
             mobile,
             vehicalType,
             type
@@ -75,7 +73,7 @@ exports.login = async (req, res, next) => {
             token: token,
             userId: loadedUser._id.toString() ,
             type: loadedUser.type,
-            name:loadedUser.firstName
+            name:loadedUser.name
         });
     } catch (err) {
         if (!err.statusCode) {
