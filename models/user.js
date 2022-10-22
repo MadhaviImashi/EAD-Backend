@@ -19,6 +19,7 @@ const userSchema = new Schema({
     },
     type: {
         type: String,
+        default: 'user',
     },
     vehicalType: {
         type: String,
