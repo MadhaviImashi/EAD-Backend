@@ -2,7 +2,7 @@ const { validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const User = require('../models/user');
+const FuelShed = require('../models/fuelShed');
 
 exports.signup = async (req, res, next) => {
     console.log('req', req.body);
@@ -14,26 +14,24 @@ exports.signup = async (req, res, next) => {
         throw error;
     }
 
-    const name = req.body.name;
+    const stationName = req.body.stationName;
+    const adminName = req.body.adminName;
+    const NIC = req.body.NIC;
     const email = req.body.email;
     const password = req.body.password;
-    const mobile = req.body.mobile;
-    const vehicalType = req.body.vehicalType;
-    const type = req.body.type;
 
     try {
         const hashedPw = await bcrypt.hash(password, 12);
 
-        const user = new User({
+        const fuelShed = new FuelShed({
+            stationName,
+            adminName,
+            NIC,
             email,
             password: hashedPw,
-            name,
-            mobile,
-            vehicalType,
-            type
         });
-        const result = await user.save();
-        res.status(201).json({ success: true, message: 'User created!', userId: result._id });
+        const result = await fuelShed.save();
+        res.status(201).json({ success: true, message: 'FuelShed created!', fuelShedId: result._id });
     } catch (err) {
         if (!err.statusCode) {
             err.statusCode = 500;
@@ -41,7 +39,6 @@ exports.signup = async (req, res, next) => {
         next(err);
     }
 };
-
 
 exports.login = async (req, res, next) => {
     const email = req.body.email;
