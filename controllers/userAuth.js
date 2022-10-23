@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
+const FuelShed = require('../models/fuelShed');
 
 exports.signup = async (req, res, next) => {
     console.log('req', req.body);
@@ -48,34 +49,70 @@ exports.login = async (req, res, next) => {
     const password = req.body.password;
     let loadedUser;
     try {
+        // find in user table
         const user = await User.findOne({ email: email });
+        if (user) {
+            loadedUser = user;
+            const isEqual = await bcrypt.compare(password, user.password);
+            if (!isEqual) {
+                const error = new Error('Wrong password!');
+                error.statusCode = 401;
+                throw error;
+            }
+            const token = jwt.sign(
+                {
+                    email: loadedUser.email,
+                    userId: loadedUser._id.toString()
+                },
+                process.env.JWT_SECRET,
+                { expiresIn: '1h' }
+            );
+            res.status(200).json({
+                success: true,
+                token: token,
+                userId: loadedUser._id.toString() ,
+                type: loadedUser.type,
+                name:loadedUser.name
+            });
+        }
+        else {
+            // find in fuel-stations table
+            const fuelShed = await FuelShed.findOne({ email: email });
+            if (fuelShed) {
+                loadedUser = user;
+                const isEqual = await bcrypt.compare(password, user.password);
+                if (!isEqual) {
+                    const error = new Error('Wrong password!');
+                    error.statusCode = 401;
+                    throw error;
+                }
+                const token = jwt.sign(
+                    {
+                        email: loadedUser.email,
+                        userId: loadedUser._id.toString()
+                    },
+                    process.env.JWT_SECRET,
+                    { expiresIn: '1h' }
+                );
+                res.status(200).json({
+                    success: true,
+                    token: token,
+                    stationId: loadedUser._id.toString() ,
+                    type: loadedUser.type,
+                    name:loadedUser.name
+                });
+            }
+            if (!fuelShed) {
+                const error = new Error('A user with this email could not be found.');
+                error.statusCode = 401;
+                throw error;
+            }
+        }
         if (!user) {
             const error = new Error('A user with this email could not be found.');
             error.statusCode = 401;
             throw error;
         }
-        loadedUser = user;
-        const isEqual = await bcrypt.compare(password, user.password);
-        if (!isEqual) {
-            const error = new Error('Wrong password!');
-            error.statusCode = 401;
-            throw error;
-        }
-        const token = jwt.sign(
-            {
-                email: loadedUser.email,
-                userId: loadedUser._id.toString()
-            },
-            process.env.JWT_SECRET,
-            { expiresIn: '1h' }
-        );
-        res.status(200).json({
-            success: true,
-            token: token,
-            userId: loadedUser._id.toString() ,
-            type: loadedUser.type,
-            name:loadedUser.name
-        });
     } catch (err) {
         if (!err.statusCode) {
             err.statusCode = 500;
