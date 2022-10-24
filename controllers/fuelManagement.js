@@ -1,6 +1,5 @@
 const User = require('../models/user');
 const FuelShed = require('../models/fuelShed');
-const { findOneAndUpdate, update } = require('../models/user');
 
 //method: get station details by stationId
 const getFuelStationDetails = async (req, response) => {
@@ -70,6 +69,36 @@ const updateFuelStationDetails = async (req, response) => {
     catch (err) {
         console.log(err, "couldn't update fuel station details");
     }    
+}
+
+//method: find id of searched stationName
+const getIdByFuelStationName = async (req, response) => {
+    const station_name = req.body.station_name; //new RegExp('^' + station_name + '$', "i"
+    try {
+        FuelShed.find({ stationName: new RegExp('^' + station_name + '$', "i")}, (err, res) => {
+            if (err) { 
+                console.log(err);
+            }
+            else {
+                if (res[0]) {
+                    response.status(200).json({
+                        success: true,
+                        message: "searched fuel shed was found",
+                        station_id: res[0]._id
+                    })
+                }
+                else {
+                    response.status(404).json({
+                        success: false,
+                        message: "no matching result to be found"
+                    })
+                }
+            }
+        })
+    }
+    catch (err) {
+        console.log(err, "no matching result found for searched fuel station name");
+    }
 }
 
 //method: Search fuel station (get all details of searched StationId)
@@ -232,6 +261,7 @@ const getQueueWaitingTimes = async (req, response) => {
 
 const all = {
     getFuelStationDetails,
+    getIdByFuelStationName,
     getDetailsOfSearchedFuelStation,
     updateFuelStationDetails,
     addUserToFuelQueue,
