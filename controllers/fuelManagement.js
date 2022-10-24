@@ -64,6 +64,12 @@ const addUserToFuelQueue = async (req, response) => {
         console.log(error, 'matching user or station not found');
     }
 
+//track the time that user joined the queue
+    let t = new Date();
+    let currentTime = t.getHours() + ":" + t.getMinutes() + ":" + t.getSeconds();
+    user.joinedTime = currentTime;
+    await user.save();
+
 //find the correct category to which user belongs to & add user to the queue
     const fuelType = req.body.fuel_type; // 'Diesel' or 'Petrol'
     const vehicalType = req.body.vehical_type; // 'bus' / 'threeWheeler' / 'car' / 'bike' 
