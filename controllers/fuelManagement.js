@@ -253,7 +253,6 @@ const exitUserFromFuelQueue = async (req, response) => {
 //find the user who is going to join the queue, the station
     const user_id = req.body.user_id;
     const station_id = req.body.station_id;
-    console.log('u-id, station-id,', user_id, station_id);
     let user, station;
     try {
         user = await User.findById(user_id);
@@ -272,17 +271,14 @@ const exitUserFromFuelQueue = async (req, response) => {
 //find the correct category to which user belongs to & add user to the queue
     const fuelType = req.body.fuel_type; // 'Diesel' or 'Petrol'
     const vehicalType = req.body.vehical_type; // 'bus' / 'threeWheeler' / 'car' / 'bike' 
-    let queueType;
-    console.log('fuel, vehical: ', fuelType, vehicalType);
+    let index;
 
     if (fuelType === 'Diesel') {
         switch (vehicalType) {
             case 'bus':
                 //find where in the bus-queue this user is
-                array.forEach(element => {
-                    
-                });
-                station.Diesel.busQueue.push(user);
+                index = station.Diesel.busQueue.findIndex(item => item._id.toString() === user._id.toString());
+                station.Diesel.busQueue.splice(index, 1);
                 break;
             case 'threeWheeler':
                 station.Diesel.threeWheelerQueue.push(user);
@@ -309,16 +305,15 @@ const exitUserFromFuelQueue = async (req, response) => {
     try {
         station.save()
             .then((res) => {
-                console.log('user added to queue successfully');
                 response.status(200).json({
                     success: true,
-                    message: "user added to correct queue successfully",
+                    message: "user exit from correct queue successfully",
                     updatedStation: station,
                 })
         })
     }
     catch (err) {
-        console.log(err, "couldn't add user to the fuel queue")
+        console.log(err, "couldn't exit the user from fuel queue")
     }
 }
 //method: exit after fueling(update totalAvailableFuelQuantity)
@@ -334,6 +329,7 @@ const all = {
     getFuelQueueLengths,
     getQueueWaitingTimes,
     getFuelAvailability,
+    exitUserFromFuelQueue,
 }
 
 module.exports = all;
