@@ -7,11 +7,11 @@ const getFuelStationDetails = async (req, response) => {
 
     try {
         const fuelShed = await FuelShed.findById(station_id)
-            .populate({ path: "Diesel.busQueue" })
-            .populate({ path: "Diesel.threeWheelerQueue" })
-            .populate({ path: "Petrol.carQueue" })
-            .populate({ path: "Petrol.bikeQueue" })
-            .populate({ path: "Petrol.threeWheelerQueue" })
+            .populate("Diesel.busQueue")
+            .populate("Diesel.threeWheelerQueue" )
+            .populate("Petrol.carQueue")
+            .populate("Petrol.bikeQueue")
+            .populate("Petrol.threeWheelerQueue")
             .exec(() => (err,result)= {});
         response.status(200).json({
             success: true,
@@ -25,7 +25,7 @@ const getFuelStationDetails = async (req, response) => {
 }
 
 //method: update fuel details of a particular station
-const updateFuelStationDetails = async(req, res) = {
+const updateFuelStationDetails = async(req, res) => {
     
 }
 
@@ -35,11 +35,11 @@ const getDetailsOfSearchedFuelStation = async (req, response) => {
 
     try {
         const fuelShed = await FuelShed.findById(searched_station_id)
-            .populate({ path: "Diesel.busQueue" })
-            .populate({ path: "Diesel.threeWheelerQueue" })
-            .populate({ path: "Petrol.carQueue" })
-            .populate({ path: "Petrol.bikeQueue" })
-            .populate({ path: "Petrol.threeWheelerQueue" })
+            .populate("Diesel.busQueue")
+            .populate("Diesel.threeWheelerQueue")
+            .populate("Petrol.carQueue")
+            .populate("Petrol.bikeQueue")
+            .populate("Petrol.threeWheelerQueue")
             .exec(() => (err,result)= {});
         response.status(200).json({
             success: true,
@@ -105,7 +105,7 @@ const addUserToFuelQueue = async (req, response) => {
                 response.status(200).json({
                     success: true,
                     message: "user added to correct queue successfully",
-                    data: res,
+                    updatedStation: res,
                 })
                     .catch((err) => {
                         console.log(err, "couldn't add user to the fuel queue");
@@ -122,9 +122,15 @@ const getFuelQueueLengths = async (req, response) => {
     const station_id = req.body.station_id;
     let station;
     try {
-        station = await FuelShed.findById(station_id);
+        station = await FuelShed.findById(station_id)
+            .populate("Diesel.busQueue")
+            .populate("Diesel.threeWheelerQueue")
+            .populate("Petrol.carQueue")
+            .populate("Petrol.bikeQueue")
+            .populate("Petrol.threeWheelerQueue")
+            .exec(() => (err,result)= {});
         //calculate lengths of each fuel queue
-        queueLengths = {
+        let queueLengths = {
             "diesel_bus_queue_length": station.Diesel.busQueue.length,
             "diesel_threeWheeler_queue_length": station.Diesel.threeWheelerQueue.length,
             "petrol_car_queue_length": station.Petrol.threeWheelerQueue.length,
@@ -137,11 +143,39 @@ const getFuelQueueLengths = async (req, response) => {
         })
     }
     catch (error) {
-        console.log(error, 'matching station is not found');
+        console.log(error, "couldn't retrieve fuel queue lengths");
     }
 }
 //method: get waiting time of each queue (ex: stationId.petrol.carQueue[0].arrivalTime)
-
+const getQueueWaitingTimes = async (req, response) => {
+    const station_id = req.body.station_id;
+    let station;
+    try {
+        //find the station
+        station = await FuelShed.findById(station_id)
+            .populate("Diesel.busQueue")
+            .populate("Diesel.threeWheelerQueue")
+            .populate("Petrol.carQueue")
+            .populate("Petrol.bikeQueue")
+            .populate("Petrol.threeWheelerQueue")
+            .exec(() => (err,result)= {});
+        //find waiting times of each queue (the arrival time of the person who is about to obtain fuel(who is at the front of the queue))
+        let waitingTimes = {
+            "w_time_for_diesel_bus_queue": station.Diesel.busQueue[0].joinedTime,
+            "w_time_for_diesel_threewheeler_queue": station.Diesel.threeWheelerQueue[0].joinedTime,
+            "w_time_for_petrol_car_queue": station.Petrol.carQueue[0].joinedTime,
+            "w_time_for_petrol_bike_queue": station.Petrol.bikeQueue[0].joinedTime,
+            "w_time_for_petrol_threewheeler_queue": station.Petrol.threeWheelerQueue[0].joinedTime,
+        }
+        response.status(200).json({
+            success: true,
+            waitingTimes
+        })
+    }
+    catch (err) {
+        console.log(err, "couldn't retrieve fuel queue waiting times");
+    }
+}
 //method: get fuel avaiablity of each fuel type
 //method: remove user from correct queue
 //method: exit after fueling
@@ -152,6 +186,7 @@ const all = {
     updateFuelStationDetails,
     addUserToFuelQueue,
     getFuelQueueLengths,
+    getQueueWaitingTimes,
 }
 
 module.exports = all;
