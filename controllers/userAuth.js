@@ -47,7 +47,7 @@ exports.signup = async (req, res, next) => {
 exports.login = async (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
-    let loadedUser;
+    let loadedUser, fuelShed;
     try {
         // find in user table
         const user = await User.findOne({ email: email });
@@ -77,10 +77,10 @@ exports.login = async (req, res, next) => {
         }
         else {
             // find in fuel-stations table
-            const fuelShed = await FuelShed.findOne({ email: email });
+            fuelShed = await FuelShed.findOne({ email: email });
             if (fuelShed) {
-                loadedUser = user;
-                const isEqual = await bcrypt.compare(password, user.password);
+                loadedUser = fuelShed;
+                const isEqual = await bcrypt.compare(password, loadedUser.password);
                 if (!isEqual) {
                     const error = new Error('Wrong password!');
                     error.statusCode = 401;
@@ -102,13 +102,8 @@ exports.login = async (req, res, next) => {
                     name:loadedUser.name
                 });
             }
-            if (!fuelShed) {
-                const error = new Error('A user with this email could not be found.');
-                error.statusCode = 401;
-                throw error;
-            }
         }
-        if (!user) {
+        if (!user && !fuelShed) {
             const error = new Error('A user with this email could not be found.');
             error.statusCode = 401;
             throw error;
