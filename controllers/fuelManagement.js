@@ -95,7 +95,6 @@ const addUserToFuelQueue = async (req, response) => {
 //find the user who is going to join the queue, the station
     const user_id = req.body.user_id;
     const station_id = req.body.station_id;
-    console.log('u-id, station-id,', user_id, station_id);
     let user, station;
     try {
         user = await User.findById(user_id);
@@ -129,7 +128,6 @@ const addUserToFuelQueue = async (req, response) => {
                 break;
         }
     } else if (fuelType === 'Petrol') {
-        console.log('inside else if')
         switch (vehicalType) {
             case 'car':
                 station.Petrol.carQueue.push(user);
@@ -223,9 +221,110 @@ const getQueueWaitingTimes = async (req, response) => {
         console.log(err, "couldn't retrieve fuel queue waiting times");
     }
 }
-//method: get fuel avaiablity of each fuel type
+//method: get fuel avaiablity of each fuel type of the respective fuel station
+const getFuelAvailability = async (req, response) => {
+    const station_id = req.body.station_id;
+    let station;
+    try {
+        //find the station
+        station = await FuelShed.findById(station_id)
+            .populate("Diesel.busQueue")
+            .populate("Diesel.threeWheelerQueue")
+            .populate("Petrol.carQueue")
+            .populate("Petrol.bikeQueue")
+            .populate("Petrol.threeWheelerQueue");
+        
+        //check availability of each fuel type
+        let petrolStatus = (station.Petrol.avaiableTotalFuelAmount > 0) ? true : false;
+        let dieselStatus = (station.Diesel.avaiableTotalFuelAmount > 0) ? true : false;
+
+        response.status(200).json({
+            success: true,
+            petrolStatus,
+            dieselStatus
+        })
+    }
+    catch (err) {
+        console.log(err, "couldn't fetch fuel avaiability details");
+    }
+}
 //method: remove user from correct queue
-//method: exit after fueling
+const exitUserFromFuelQueue = async (req, response) => {
+//find the user who is going to join the queue, the station
+    const user_id = req.body.user_id;
+    const station_id = req.body.station_id;
+    console.log('u-id, station-id,', user_id, station_id);
+    let user, station;
+    try {
+        user = await User.findById(user_id);
+        station = await FuelShed.findById(station_id);
+    }
+    catch (error) {
+        console.log(error, 'matching user or station not found');
+    }
+
+//track the time that user exit the queue
+    let t = new Date();
+    let currentTime = t.getHours() + ":" + t.getMinutes() + ":" + t.getSeconds();
+    user.exitTime = currentTime;
+    await user.save();
+
+//find the correct category to which user belongs to & add user to the queue
+    const fuelType = req.body.fuel_type; // 'Diesel' or 'Petrol'
+    const vehicalType = req.body.vehical_type; // 'bus' / 'threeWheeler' / 'car' / 'bike' 
+    let queueType;
+    console.log('fuel, vehical: ', fuelType, vehicalType);
+
+    if (fuelType === 'Diesel') {
+        switch (vehicalType) {
+            case 'bus':
+                //find where in the bus-queue this user is
+                array.forEach(element => {
+                    
+                });
+                station.Diesel.busQueue.push(user);
+                break;
+            case 'threeWheeler':
+                station.Diesel.threeWheelerQueue.push(user);
+                break;
+            default:
+                break;
+        }
+    } else if (fuelType === 'Petrol') {
+        console.log('inside else if')
+        switch (vehicalType) {
+            case 'car':
+                station.Petrol.carQueue.push(user);
+                break;
+            case 'threeWheeler':
+                station.Petrol.threeWheelerQueue.push(user);
+                break;
+            case 'bike':
+                station.Petrol.bikeQueue.push(user);
+            default:
+                break;
+        }
+    }
+//save the modified station details
+    try {
+        station.save()
+            .then((res) => {
+                console.log('user added to queue successfully');
+                response.status(200).json({
+                    success: true,
+                    message: "user added to correct queue successfully",
+                    updatedStation: station,
+                })
+        })
+    }
+    catch (err) {
+        console.log(err, "couldn't add user to the fuel queue")
+    }
+}
+//method: exit after fueling(update totalAvailableFuelQuantity)
+const exitAfterFueling = async (req, response) => {
+
+}
 
 const all = {
     getFuelStationDetails,
@@ -234,6 +333,7 @@ const all = {
     addUserToFuelQueue,
     getFuelQueueLengths,
     getQueueWaitingTimes,
+    getFuelAvailability,
 }
 
 module.exports = all;

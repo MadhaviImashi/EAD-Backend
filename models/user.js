@@ -26,6 +26,9 @@ const userSchema = new Schema({
     },
     joinedTime: {
         type: String
+    },
+    exitTime: {
+        type: String
     }
 });
 
