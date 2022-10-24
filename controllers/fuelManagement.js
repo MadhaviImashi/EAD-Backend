@@ -34,17 +34,26 @@ const updateFuelStationDetails = async(req, response) => {
     const PetrolArrivedQuantity = req.body.petrol_arrived_quantity;
     const PetrolFinishingTime = req.body.petrol_finishing_time;
 
-    console.log('fuelll', station_id, DieselArrivalTime, PetrolArrivedQuantity);
     try {
+        //update total avaiable fuel quantity
+        let StationBeforeUpdate = await FuelShed.findById(station_id);
+        let avaiableDieselQnt = StationBeforeUpdate.Diesel.avaiableTotalFuelAmount;
+        let avaiablePetrolQnt = StationBeforeUpdate.Petrol.avaiableTotalFuelAmount;
+
+        const totalDieselQuantity = avaiableDieselQnt + req.body.diesel_arrived_quantity;
+        const totalPetrolQuantity = avaiablePetrolQnt + req.body.petrol_arrived_quantity;
+        
         //find the station
         let station = await FuelShed.findOneAndUpdate({ station_id }
         ,{
             "Diesel.arrivalTime": DieselArrivalTime,
             "Diesel.arrivedQuantity": DieselArrivedQuantity,
             "Diesel.finishingTime": DieselFinishingTime,
+            "Diesel.avaiableTotalFuelAmount": totalDieselQuantity,
             "Petrol.arrivalTime": PetrolArrivalTime,
             "Petrol.arrivedQuantity": PetrolArrivedQuantity,
-            "Petrol.finishingTime": PetrolFinishingTime
+            "Petrol.finishingTime": PetrolFinishingTime,
+            "Petrol.avaiableTotalFuelAmount": totalPetrolQuantity
             }).exec();
         let updatedFuelStation = await FuelShed.findById(station_id);
         response.status(200).json({

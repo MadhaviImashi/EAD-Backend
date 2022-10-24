@@ -35,6 +35,7 @@ const userSchema = new Schema({
         },
         avaiableTotalFuelAmount: {
             type: Number,
+            default: 0
         },
         finishingTime: { 
             type: String
@@ -61,6 +62,7 @@ const userSchema = new Schema({
         },
         avaiableTotalFuelAmount: {
             type: Number,
+            default: 0
         },
         finishingTime: {
             type: String
