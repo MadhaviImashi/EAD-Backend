@@ -23,7 +23,7 @@ router.post(
         body('password')
             .trim()
             .isLength({ min: 5 }),
-        body('name')
+        body('adminName')
             .trim()
             .not()
             .isEmpty(),
@@ -31,11 +31,10 @@ router.post(
             .trim(),
         body('type')
             .trim()
-            .not()
     ],
     signup
 );
 
-router.post('/login', login);
+// router.post('/login', login);
 
 module.exports = router;
