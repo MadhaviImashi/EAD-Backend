@@ -31,7 +31,7 @@ exports.signup = async (req, res, next) => {
             password: hashedPw,
         });
         const result = await fuelShed.save();
-        res.status(201).json({ success: true, message: 'FuelShed created!', fuelShedId: result._id });
+        res.status(201).json({ success: true, message: 'FuelShed created!', fuelShedId: result._id, result });
     } catch (err) {
         if (!err.statusCode) {
             err.statusCode = 500;
