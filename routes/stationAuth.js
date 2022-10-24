@@ -2,6 +2,7 @@ const express = require('express');
 const { body } = require('express-validator');
 
 const FuelShed = require('../models/fuelShed');
+const { signup } = require('../controllers/stationAuth');
 
 const router = express.Router();
 
