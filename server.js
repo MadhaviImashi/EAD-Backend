@@ -22,10 +22,19 @@ app.use((req, res, next) => {
     next();
 });
 
-// https://eadfuelapp.herokuapp.com/api/auth/register
-app.use('/api/auth', authRoutes);
-app.use('/api/shed-owner', shedOwnerAuthRoutes);
-app.use('/api/fuel-station/', fuelStationRoutes);
+app.use('/api/auth', authRoutes); 
+// https://eadfuelapp.herokuapp.com/api/auth/register                   [POST]
+
+app.use('/api/auth/shed-owner', shedOwnerAuthRoutes);
+// https://eadfuelapp.herokuapp.com/api/auth/shed-owner/register        [POST]
+
+app.use('/api/fuel-station', fuelStationRoutes);
+// https://eadfuelapp.herokuapp.com/api/fuel-station/                   [GET]
+// https://eadfuelapp.herokuapp.com/api/fuel-station/search             [GET]
+// https://eadfuelapp.herokuapp.com/api/fuel-station/                   [PUT]
+// https://eadfuelapp.herokuapp.com/api/fuel-station/add-to-queue       [POST]
+// https://eadfuelapp.herokuapp.com/api/fuel-station/q-lengths          [GET]
+// https://eadfuelapp.herokuapp.com/api/fuel-station/q-waiting-times    [GET]
 
 app.use((error, req, res, next) => {
     console.log(error);
