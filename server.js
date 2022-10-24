@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 
 const authRoutes = require('./routes/auth');
+const fuelStationRoutes = require('./routes/FuelManagement');
 require('dotenv').config();
 
 const app = express();
@@ -22,6 +23,7 @@ app.use((req, res, next) => {
 
 // https://eadfuelapp.herokuapp.com/api/auth/register
 app.use('/api/auth', authRoutes);
+app.use('/api/fuel-station/', fuelStationRoutes);
 
 app.use((error, req, res, next) => {
     console.log(error);
