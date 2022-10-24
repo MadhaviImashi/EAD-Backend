@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const User = require('./user');
 
 const userSchema = new Schema({
     stationName: {
@@ -87,7 +86,7 @@ const userSchema = new Schema({
     }
 });
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model('FuelShed', userSchema);
 
 /* functionalities */
 
