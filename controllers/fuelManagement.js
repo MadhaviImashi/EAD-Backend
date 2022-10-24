@@ -135,9 +135,9 @@ const getFuelQueueLengths = async (req, response) => {
         let queueLengths = {
             "diesel_bus_queue_length": station.Diesel.busQueue.length,
             "diesel_threeWheeler_queue_length": station.Diesel.threeWheelerQueue.length,
-            "petrol_car_queue_length": station.Petrol.threeWheelerQueue.length,
-            "petrol_bike_queue_length": station.Petrol.carQueue.length,
-            "petrol_threeWheeler_queue_length": station.Petrol.bikeQueue.length,
+            "petrol_car_queue_length": station.Petrol.carQueue.length,
+            "petrol_bike_queue_length": station.Petrol.bikeQueue.length,
+            "petrol_threeWheeler_queue_length": station.Petrol.threeWheelerQueue.length,
         }
         response.status(200).json({
             success: true,
