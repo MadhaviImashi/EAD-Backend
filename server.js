@@ -35,6 +35,9 @@ app.use('/api/fuel-station', fuelStationRoutes);
 // https://eadfuelapp.herokuapp.com/api/fuel-station/add-to-queue       [POST]
 // https://eadfuelapp.herokuapp.com/api/fuel-station/q-lengths          [GET]
 // https://eadfuelapp.herokuapp.com/api/fuel-station/q-waiting-times    [GET]
+// https://eadfuelapp.herokuapp.com/api/fuel-station/fuel-avaiability   [GET]
+// https://eadfuelapp.herokuapp.com/api/fuel-station/exit-queue         [POST]
+// https://eadfuelapp.herokuapp.com/api/fuel-station/exit-after-pump    [POST]
 
 app.use((error, req, res, next) => {
     console.log(error);

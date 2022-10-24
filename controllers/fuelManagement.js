@@ -281,7 +281,9 @@ const exitUserFromFuelQueue = async (req, response) => {
                 station.Diesel.busQueue.splice(index, 1);
                 break;
             case 'threeWheeler':
-                station.Diesel.threeWheelerQueue.push(user);
+                //find where in the 3wheeler-queue this user is
+                index = station.Diesel.threeWheelerQueue.findIndex(item => item._id.toString() === user._id.toString());
+                station.Diesel.threeWheelerQueue.splice(index, 1);
                 break;
             default:
                 break;
@@ -290,13 +292,19 @@ const exitUserFromFuelQueue = async (req, response) => {
         console.log('inside else if')
         switch (vehicalType) {
             case 'car':
-                station.Petrol.carQueue.push(user);
+                //find where in the car-queue this user is
+                index = station.Petrol.carQueue.findIndex(item => item._id.toString() === user._id.toString());
+                station.Petrol.carQueue.splice(index, 1);
                 break;
             case 'threeWheeler':
-                station.Petrol.threeWheelerQueue.push(user);
+                //find where in the 3wheeler-queue this user is
+                index = station.Petrol.threeWheelerQueue.findIndex(item => item._id.toString() === user._id.toString());
+                station.Petrol.threeWheelerQueue.splice(index, 1);
                 break;
             case 'bike':
-                station.Petrol.bikeQueue.push(user);
+                //find where in the bike-queue this user is
+                index = station.Petrol.bikeQueue.findIndex(item => item._id.toString() === user._id.toString());
+                station.Petrol.bikeQueue.splice(index, 1);
             default:
                 break;
         }
@@ -316,9 +324,41 @@ const exitUserFromFuelQueue = async (req, response) => {
         console.log(err, "couldn't exit the user from fuel queue")
     }
 }
-//method: exit after fueling(update totalAvailableFuelQuantity)
+//method: exit after fueling (update totalAvailableFuelQuantity after every person obtain fuel)
 const exitAfterFueling = async (req, response) => {
 
+    const station_id = req.body.station_id;
+    const fuelType = req.body.fuel_type; // 'Diesel' or 'Petrol'
+    const amount = req.body.amount //in letres
+    let station;
+    try {
+        //find the station from which the user has pumped fuel
+        station = await FuelShed.findById(station_id);
+
+        //reduce the amount from respective fuel type of this station
+        if (fuelType === 'Diesel') {
+            let currentAmount = station.Diesel.avaiableTotalFuelAmount;
+            station.Diesel.avaiableTotalFuelAmount = currentAmount - amount;
+        } else if (fuelType === 'Petrol') {
+            let currentAmount = station.Petrol.avaiableTotalFuelAmount;
+            station.Petrol.avaiableTotalFuelAmount = currentAmount - amount;
+        }
+
+        //save updated station fuel details
+        station.save()
+                .then((res) => {
+                    response.status(200).json({
+                        success: true,
+                        message: "Available fuel amount updated successfully",
+                        updatedStation: res,
+                })
+        })
+    }
+    catch (error) {
+        console.log(error, 'matching user or station not found');
+    }
+
+    
 }
 
 const all = {
@@ -330,6 +370,7 @@ const all = {
     getQueueWaitingTimes,
     getFuelAvailability,
     exitUserFromFuelQueue,
+    exitAfterFueling,
 }
 
 module.exports = all;
