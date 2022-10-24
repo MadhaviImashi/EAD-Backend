@@ -1,5 +1,6 @@
 const User = require('../models/user');
 const FuelShed = require('../models/fuelShed');
+const { findOneAndUpdate, update } = require('../models/user');
 
 //method: get station details by stationId
 const getFuelStationDetails = async (req, response) => {
@@ -24,8 +25,37 @@ const getFuelStationDetails = async (req, response) => {
 }
 
 //method: update fuel details of a particular station
-const updateFuelStationDetails = async(req, res) => {
-    
+const updateFuelStationDetails = async(req, response) => {
+    const station_id = req.body.station_id;
+    const DieselArrivalTime = req.body.diesel_arrival_time;
+    const DieselArrivedQuantity = req.body.diesel_arrived_quantity;
+    const DieselFinishingTime = req.body.diesel_finishing_time;
+    const PetrolArrivalTime = req.body.petrol_arrival_time;
+    const PetrolArrivedQuantity = req.body.petrol_arrived_quantity;
+    const PetrolFinishingTime = req.body.petrol_finishing_time;
+
+    console.log('fuelll', station_id, DieselArrivalTime, PetrolArrivedQuantity);
+    try {
+        //find the station
+        let station = await FuelShed.findOneAndUpdate({ station_id }
+        ,{
+            "Diesel.arrivalTime": DieselArrivalTime,
+            "Diesel.arrivedQuantity": DieselArrivedQuantity,
+            "Diesel.finishingTime": DieselFinishingTime,
+            "Petrol.arrivalTime": PetrolArrivalTime,
+            "Petrol.arrivedQuantity": PetrolArrivedQuantity,
+            "Petrol.finishingTime": PetrolFinishingTime
+            }).exec();
+        let updatedFuelStation = await FuelShed.findById(station_id);
+        response.status(200).json({
+            success: true,
+            message: "UPDATE station details",
+            updatedFuelStation: updatedFuelStation
+        })
+    }
+    catch (err) {
+        console.log(err);
+    }    
 }
 
 //method: Search fuel station (get all details of searched StationId)

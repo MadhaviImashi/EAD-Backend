@@ -36,7 +36,7 @@ const userSchema = new Schema({
         avaiableTotalFuelAmount: {
             type: Number,
         },
-        finishingTime: {
+        finishingTime: { 
             type: String
         },
         busQueue: [
