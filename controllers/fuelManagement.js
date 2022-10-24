@@ -11,8 +11,7 @@ const getFuelStationDetails = async (req, response) => {
             .populate("Diesel.threeWheelerQueue" )
             .populate("Petrol.carQueue")
             .populate("Petrol.bikeQueue")
-            .populate("Petrol.threeWheelerQueue")
-            .exec(() => (err,result)= {});
+            .populate("Petrol.threeWheelerQueue");
         response.status(200).json({
             success: true,
             message: "GET station details",
@@ -39,8 +38,7 @@ const getDetailsOfSearchedFuelStation = async (req, response) => {
             .populate("Diesel.threeWheelerQueue")
             .populate("Petrol.carQueue")
             .populate("Petrol.bikeQueue")
-            .populate("Petrol.threeWheelerQueue")
-            .exec(() => (err,result)= {});
+            .populate("Petrol.threeWheelerQueue");
         response.status(200).json({
             success: true,
             message: "GET station details",
@@ -56,6 +54,7 @@ const addUserToFuelQueue = async (req, response) => {
 //find the user who is going to join the queue, the station
     const user_id = req.body.user_id;
     const station_id = req.body.station_id;
+    console.log('u-id, station-id,', user_id, station_id);
     let user, station;
     try {
         user = await User.findById(user_id);
@@ -65,50 +64,48 @@ const addUserToFuelQueue = async (req, response) => {
         console.log(error, 'matching user or station not found');
     }
 
-//find the correct category to which user belongs to
-    const fuelType = req.body.fuelType; // 'Diesel' or 'Petrol'
-    const vehicalType = req.body.vehicalType // 'bus' / 'threeWheeler' / 'car' / 'bike' 
+//find the correct category to which user belongs to & add user to the queue
+    const fuelType = req.body.fuel_type; // 'Diesel' or 'Petrol'
+    const vehicalType = req.body.vehical_type; // 'bus' / 'threeWheeler' / 'car' / 'bike' 
     let queueType;
+    console.log('fuel, vehical: ', fuelType, vehicalType);
 
     if (fuelType === 'Diesel') {
         switch (vehicalType) {
             case 'bus':
-                queueType = station.Diesel.busQueue;
+                station.Diesel.busQueue.push(user);
                 break;
-            case 'threewheeler':
-                queueType = station.Diesel.threeWheelerQueue;
+            case 'threeWheeler':
+                station.Diesel.threeWheelerQueue.push(user);
                 break;
             default:
                 break;
         }
     } else if (fuelType === 'Petrol') {
+        console.log('inside else if')
         switch (vehicalType) {
-            case 'bus':
-                queueType = station.Petrol.busQueue;
+            case 'car':
+                station.Petrol.carQueue.push(user);
                 break;
-            case 'threewheeler':
-                queueType = station.Petrol.threeWheelerQueue;
+            case 'threeWheeler':
+                station.Petrol.threeWheelerQueue.push(user);
                 break;
             case 'bike':
-                queueType = station.Petrol.bikeQueue;
+                station.Petrol.bikeQueue.push(user);
             default:
                 break;
         }
     }
 
-//add the user to the correct queue
+//save the modified station details
     try {
-        queueType.push(user);
         station.save()
             .then((res) => {
                 console.log('user added to queue successfully');
                 response.status(200).json({
                     success: true,
                     message: "user added to correct queue successfully",
-                    updatedStation: res,
-                })
-                    .catch((err) => {
-                        console.log(err, "couldn't add user to the fuel queue");
+                    updatedStation: station,
                 })
         })
     }
@@ -127,8 +124,7 @@ const getFuelQueueLengths = async (req, response) => {
             .populate("Diesel.threeWheelerQueue")
             .populate("Petrol.carQueue")
             .populate("Petrol.bikeQueue")
-            .populate("Petrol.threeWheelerQueue")
-            .exec(() => (err,result)= {});
+            .populate("Petrol.threeWheelerQueue");
         //calculate lengths of each fuel queue
         let queueLengths = {
             "diesel_bus_queue_length": station.Diesel.busQueue.length,
@@ -157,15 +153,19 @@ const getQueueWaitingTimes = async (req, response) => {
             .populate("Diesel.threeWheelerQueue")
             .populate("Petrol.carQueue")
             .populate("Petrol.bikeQueue")
-            .populate("Petrol.threeWheelerQueue")
-            .exec(() => (err,result)= {});
+            .populate("Petrol.threeWheelerQueue");
+        
         //find waiting times of each queue (the arrival time of the person who is about to obtain fuel(who is at the front of the queue))
+        let t = new Date();
+        let currentTime = t.getHours() + ":" + t.getMinutes() + ":" + t.getSeconds();
+
         let waitingTimes = {
-            "w_time_for_diesel_bus_queue": station.Diesel.busQueue[0].joinedTime,
-            "w_time_for_diesel_threewheeler_queue": station.Diesel.threeWheelerQueue[0].joinedTime,
-            "w_time_for_petrol_car_queue": station.Petrol.carQueue[0].joinedTime,
-            "w_time_for_petrol_bike_queue": station.Petrol.bikeQueue[0].joinedTime,
-            "w_time_for_petrol_threewheeler_queue": station.Petrol.threeWheelerQueue[0].joinedTime,
+            "currentTime": currentTime,
+            "w_time_for_diesel_bus_queue": (station.Diesel.busQueue.length > 0)? station.Diesel.busQueue[0].joinedTime: '00:00:00',
+            "w_time_for_diesel_threewheeler_queue": (station.Diesel.threeWheelerQueue.length > 0)? station.Diesel.threeWheelerQueue[0].joinedTime: '00:00:00',
+            "w_time_for_petrol_car_queue": (station.Petrol.carQueue.length > 0)? station.Petrol.carQueue[0].joinedTime: '00:00:00',
+            "w_time_for_petrol_bike_queue": (station.Petrol.bikeQueue.length > 0)? station.Petrol.bikeQueue[0].joinedTime: '00:00:00',
+            "w_time_for_petrol_threewheeler_queue": (station.Petrol.threeWheelerQueue.length > 0)? station.Petrol.threeWheelerQueue[0].joinedTime: '00:00:00',
         }
         response.status(200).json({
             success: true,
