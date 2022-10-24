@@ -30,7 +30,8 @@ app.use('/api/auth/shed-owner', shedOwnerAuthRoutes);
 
 app.use('/api/fuel-station', fuelStationRoutes);
 // https://eadfuelapp.herokuapp.com/api/fuel-station/                   [GET]
-// https://eadfuelapp.herokuapp.com/api/fuel-station/search             [GET]
+// https://eadfuelapp.herokuapp.com/api/fuel-station/search-station     [GET]
+// https://eadfuelapp.herokuapp.com/api/fuel-station/search-details     [GET]
 // https://eadfuelapp.herokuapp.com/api/fuel-station/update             [POST]
 // https://eadfuelapp.herokuapp.com/api/fuel-station/add-to-queue       [POST]
 // https://eadfuelapp.herokuapp.com/api/fuel-station/q-lengths          [GET]
