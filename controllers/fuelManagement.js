@@ -117,6 +117,29 @@ const addUserToFuelQueue = async (req, response) => {
     }
 }
 //method: get the lenght of each queue (lenght of queue array)
+const getFuelQueueLengths = async (req, response) => {
+    //find the station
+    const station_id = req.body.station_id;
+    let station;
+    try {
+        station = await FuelShed.findById(station_id);
+        //calculate lengths of each fuel queue
+        queueLengths = {
+            "diesel_bus_queue_length": station.Diesel.busQueue.length,
+            "diesel_threeWheeler_queue_length": station.Diesel.threeWheelerQueue.length,
+            "petrol_car_queue_length": station.Petrol.threeWheelerQueue.length,
+            "petrol_bike_queue_length": station.Petrol.carQueue.length,
+            "petrol_threeWheeler_queue_length": station.Petrol.bikeQueue.length,
+        }
+        response.status(200).json({
+            success: true,
+            queueLengths
+        })
+    }
+    catch (error) {
+        console.log(error, 'matching station is not found');
+    }
+}
 //method: get waiting time of each queue (ex: stationId.petrol.carQueue[0].arrivalTime)
 
 //method: get fuel avaiablity of each fuel type
@@ -128,6 +151,7 @@ const all = {
     getDetailsOfSearchedFuelStation,
     updateFuelStationDetails,
     addUserToFuelQueue,
+    getFuelQueueLengths,
 }
 
 module.exports = all;

@@ -6,4 +6,5 @@ router.get("/", fuelManager.getFuelStationDetails);
 router.get("/search", fuelManager.getDetailsOfSearchedFuelStation);
 router.put("/", fuelManager.updateFuelStationDetails);
 router.post("/add-to-queue", fuelManager.addUserToFuelQueue);
+router.get("/queue-lengths", fuelManager.getFuelQueueLengths);
 module.exports = router;
