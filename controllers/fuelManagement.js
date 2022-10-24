@@ -25,47 +25,50 @@ const getFuelStationDetails = async (req, response) => {
 }
 
 //method: update fuel details of a particular station
-const updateFuelStationDetails = async(req, response) => {
-    const station_id = req.body.station_id;
-    const DieselArrivalTime = req.body.diesel_arrival_time;
-    const DieselArrivedQuantity = req.body.diesel_arrived_quantity;
-    const DieselFinishingTime = req.body.diesel_finishing_time;
-    const PetrolArrivalTime = req.body.petrol_arrival_time;
-    const PetrolArrivedQuantity = req.body.petrol_arrived_quantity;
-    const PetrolFinishingTime = req.body.petrol_finishing_time;
-
+const updateFuelStationDetails = async (req, response) => {
+    station_id = req.body.station_id;
     try {
-        //update total avaiable fuel quantity
-        let StationBeforeUpdate = await FuelShed.findById(station_id);
-        let availableDieselQnt, availablePetrolQnt = 0;
-        availableDieselQnt = StationBeforeUpdate.Diesel.avaiableTotalFuelAmount;
-        availablePetrolQnt = StationBeforeUpdate.Petrol.avaiableTotalFuelAmount;
-
-        const totalDieselQuantity = availableDieselQnt + req.body.diesel_arrived_quantity;
-        const totalPetrolQuantity = availablePetrolQnt + req.body.petrol_arrived_quantity;
-        console.log('totDiesel', 'totPetrol', totalDieselQuantity, totalPetrolQuantity)
-        
         //find the station
-        let station = await FuelShed.findOneAndUpdate({ station_id }
-        ,{
-            "Diesel.arrivalTime": DieselArrivalTime,
-            "Diesel.arrivedQuantity": DieselArrivedQuantity,
-            "Diesel.finishingTime": DieselFinishingTime,
-            "Diesel.avaiableTotalFuelAmount": totalDieselQuantity,
-            "Petrol.arrivalTime": PetrolArrivalTime,
-            "Petrol.arrivedQuantity": PetrolArrivedQuantity,
-            "Petrol.finishingTime": PetrolFinishingTime,
-            "Petrol.avaiableTotalFuelAmount": totalPetrolQuantity
-            }).exec();
-        let updatedFuelStation = await FuelShed.findById(station_id);
-        response.status(200).json({
-            success: true,
-            message: "UPDATE station details",
-            updatedFuelStation: updatedFuelStation
-        })
+        const station = await FuelShed.findById(station_id)
+            .populate("Diesel.busQueue")
+            .populate("Diesel.threeWheelerQueue")
+            .populate("Petrol.carQueue")
+            .populate("Petrol.bikeQueue")
+            .populate("Petrol.threeWheelerQueue");
+        
+        if (!station)
+            res.status(404).send("data is not found");
+        else {
+             //update total avaiable fuel quantity  
+            let newDieselTotal = station.Diesel.avaiableTotalFuelAmount + req.body.diesel_arrived_quantity;
+            let newPetrolTotal = station.Petrol.avaiableTotalFuelAmount + req.body.petrol_arrived_quantity;
+
+            station.Diesel.avaiableTotalFuelAmount = newDieselTotal;
+            station.Petrol.avaiableTotalFuelAmount = newPetrolTotal;
+
+            station.Diesel.arrivalTime = req.body.diesel_arrival_time;
+            station.Diesel.arrivedQuantity = req.body.diesel_arrived_quantity;
+            station.Diesel.finishingTime = req.body.diesel_finishing_time;
+            station.Petrol.arrivalTime = req.body.petrol_arrival_time;
+            station.Petrol.arrivedQuantity = req.body.petrol_arrived_quantity;
+            station.Petrol.finishingTime = req.body.petrol_finishing_time;
+
+            //save updated station details
+            station.save()
+                .then((res) => {
+                    response.status(200).json({
+                        success: true,
+                        message: "fuel details updated successfully",
+                        updatedStation: res,
+                    })
+                })
+                .catch(err => {
+                    res.status(400).send(err, "Update not possible");
+                });
+        }
     }
     catch (err) {
-        console.log(err);
+        console.log(err, "couldn't update fuel station details");
     }    
 }
 
