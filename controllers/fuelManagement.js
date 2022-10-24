@@ -43,7 +43,7 @@ const updateFuelStationDetails = async(req, response) => {
 
         const totalDieselQuantity = availableDieselQnt + req.body.diesel_arrived_quantity;
         const totalPetrolQuantity = availablePetrolQnt + req.body.petrol_arrived_quantity;
-        console.log('totDiesel', 'totPetrol', totalDieselQuantity, totalPetrolQuantity);
+        console.log('totDiesel', 'totPetrol', totalDieselQuantity, totalPetrolQuantity)
         
         //find the station
         let station = await FuelShed.findOneAndUpdate({ station_id }
