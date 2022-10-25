@@ -24,6 +24,7 @@ app.use((req, res, next) => {
 
 app.use('/api/auth', authRoutes); 
 // https://eadfuelapp.herokuapp.com/api/auth/register                   [POST]
+// https://eadfuelapp.herokuapp.com/api/auth/login                      [POST]
 
 app.use('/api/auth/shed-owner', shedOwnerAuthRoutes);
 // https://eadfuelapp.herokuapp.com/api/auth/shed-owner/register        [POST]

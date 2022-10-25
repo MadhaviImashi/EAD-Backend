@@ -48,6 +48,7 @@ exports.login = async (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
     let loadedUser, fuelShed;
+    console.log('logging..', email, password);
     try {
         // find in user table
         const user = await User.findOne({ email: email });
