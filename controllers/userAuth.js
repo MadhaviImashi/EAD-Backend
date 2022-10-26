@@ -98,7 +98,7 @@ exports.login = async (req, res, next) => {
                 res.status(200).json({
                     success: true,
                     token: token,
-                    stationId: loadedUser._id.toString() ,
+                    user_id: loadedUser._id.toString() ,
                     type: loadedUser.type,
                     name:loadedUser.name
                 });
