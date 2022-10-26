@@ -3,7 +3,7 @@ const router = express.Router();
 const fuelManager = require("../controllers/fuelManagement");
 
 router.get("/", fuelManager.getFuelStationDetails);
-router.get("/search-station", fuelManager.getIdByFuelStationName);
+router.post("/search-station", fuelManager.getIdByFuelStationName);
 router.get("/station-details", fuelManager.getDetailsOfSearchedFuelStation);
 router.post("/update", fuelManager.updateFuelStationDetails);
 router.post("/add-to-queue", fuelManager.addUserToFuelQueue);
