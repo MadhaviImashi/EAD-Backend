@@ -16,9 +16,10 @@ exports.signup = async (req, res, next) => {
 
     const stationName = req.body.stationName;
     const adminName = req.body.adminName;
-    const NIC = req.body.NIC;
     const email = req.body.email;
     const password = req.body.password;
+    const isPetrol = req.body.isPetrol;
+    const isDiesel = req.body.isDiesel;
 
     try {
         const hashedPw = await bcrypt.hash(password, 12);
@@ -26,9 +27,11 @@ exports.signup = async (req, res, next) => {
         const fuelShed = new FuelShed({
             stationName,
             adminName,
-            NIC,
             email,
             password: hashedPw,
+            type: "shed",
+            isPetrol,
+            isDiesel
         });
         const result = await fuelShed.save();
         res.status(201).json({ success: true, message: 'FuelShed created!', fuelShedId: result._id, result });
