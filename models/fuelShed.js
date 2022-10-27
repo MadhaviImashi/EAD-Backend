@@ -33,16 +33,19 @@ const userSchema = new Schema({
     Diesel: {
         arrivalTime: {
             type: String,
+            default: "00:00:00"
         },
         arrivedQuantity: {
             type: Number,
+            default: 0
         },
         avaiableTotalFuelAmount: {
             type: Number,
             default: 0
         },
         finishingTime: { 
-            type: String
+            type: String,
+            default: "00:00:00"
         },
         busQueue: [
             {
@@ -60,16 +63,19 @@ const userSchema = new Schema({
     Petrol: {
         arrivalTime: {
             type: String,
+            default: "00:00:00"
         },
         arrivedQuantity: {
             type: Number,
+            default: 0
         },
         avaiableTotalFuelAmount: {
             type: Number,
             default: 0
         },
         finishingTime: {
-            type: String
+            type: String,
+            default: "00:00:00"
         },
         carQueue: [
             {
