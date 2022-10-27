@@ -36,7 +36,7 @@ const updateFuelStationDetails = async (req, response) => {
             .populate("Petrol.threeWheelerQueue");
         
         if (!station)
-            response.status(404).send("data is not found");
+            response.status(404).send("data is not found!");
         else {
              //update total avaiable fuel quantity  
             let newDieselTotal = parseInt(station.Diesel.avaiableTotalFuelAmount) + parseInt(req.body.diesel_arrived_quantity);
