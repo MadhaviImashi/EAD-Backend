@@ -26,11 +26,7 @@ router.post(
         body('adminName')
             .trim()
             .not()
-            .isEmpty(),
-        body('mobile')
-            .trim(),
-        body('type')
-            .trim()
+            .isEmpty()
     ],
     signup
 );

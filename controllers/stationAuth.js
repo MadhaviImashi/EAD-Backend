@@ -5,6 +5,8 @@ const jwt = require('jsonwebtoken');
 const FuelShed = require('../models/fuelShed');
 
 exports.signup = async (req, res, next) => {
+    let isPetrol, isDiesel;
+
     console.log('req', req.body);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -18,9 +20,22 @@ exports.signup = async (req, res, next) => {
     const adminName = req.body.adminName;
     const email = req.body.email;
     const password = req.body.password;
-    const isPetrol = req.body.isPetrol;
-    const isDiesel = req.body.isDiesel;
+    const petrol = req.body.isPetrol;
+    const diesel = req.body.isDiesel;
 
+    //convert petrol and diesel into boolean values
+    if (petrol === "true") {
+        isPetrol = true;
+    } else {
+        isPetrol = false;
+    }
+
+    if (diesel === "true") {
+        isDiesel = true;
+    } else {
+        isDiesel = false;
+    }
+    
     try {
         const hashedPw = await bcrypt.hash(password, 12);
 
