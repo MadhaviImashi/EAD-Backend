@@ -5,7 +5,7 @@ const fuelManager = require("../controllers/fuelManagement");
 router.post("/", fuelManager.getFuelStationDetails);
 router.post("/search-station", fuelManager.getIdByFuelStationName);
 router.post("/station-details", fuelManager.getDetailsOfSearchedFuelStation);
-router.post("/update", fuelManager.updateFuelStationDetails);
+router.patch("/update", fuelManager.updateFuelStationDetails);
 router.post("/add-to-queue", fuelManager.addUserToFuelQueue);
 router.post("/q-lengths", fuelManager.getFuelQueueLengths);
 router.post("/q-waiting-times", fuelManager.getQueueWaitingTimes);
