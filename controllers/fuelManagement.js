@@ -45,9 +45,11 @@ const updateFuelStationDetails = async (req, response) => {
             station.Diesel.avaiableTotalFuelAmount = newDieselTotal;
             station.Petrol.avaiableTotalFuelAmount = newPetrolTotal;
 
+            station.Diesel.arrivalDate = req.body.diesel_arrival_date;
             station.Diesel.arrivalTime = req.body.diesel_arrival_time;
             station.Diesel.arrivedQuantity = req.body.diesel_arrived_quantity;
             station.Diesel.finishingTime = req.body.diesel_finishing_time;
+            station.Petrol.arrivalDate = req.body.petrol_arrival_date;
             station.Petrol.arrivalTime = req.body.petrol_arrival_time;
             station.Petrol.arrivedQuantity = req.body.petrol_arrived_quantity;
             station.Petrol.finishingTime = req.body.petrol_finishing_time;

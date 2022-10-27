@@ -31,6 +31,10 @@ const userSchema = new Schema({
         required: true
     },
     Diesel: {
+        arrivalDate: {
+            type: String,
+            default: "YY/MM/DD"
+        },
         arrivalTime: {
             type: String,
             default: "00:00:00"
@@ -61,6 +65,10 @@ const userSchema = new Schema({
         ]
     },
     Petrol: {
+        arrivalDate: {
+            type: String,
+            default: "YY/MM/DD"
+        },
         arrivalTime: {
             type: String,
             default: "00:00:00"
