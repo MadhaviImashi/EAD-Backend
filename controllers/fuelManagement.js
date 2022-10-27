@@ -65,7 +65,7 @@ const updateFuelStationDetails = async (req, response) => {
                     })
                 })
                 .catch(err => {
-                    res.status(400).send(err, "Update not possible");
+                    response.status(400).send(err, "Update not possible");
                 });
         }
     }
