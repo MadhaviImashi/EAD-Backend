@@ -19,7 +19,7 @@ const getFuelStationDetails = async (req, response) => {
         })
     }
     catch (err) {
-        console.log(err);
+        console.log(err, "no such station found");
     }
 }
 
@@ -36,11 +36,11 @@ const updateFuelStationDetails = async (req, response) => {
             .populate("Petrol.threeWheelerQueue");
         
         if (!station)
-            res.status(404).send("data is not found");
+            response.status(404).send("data is not found");
         else {
              //update total avaiable fuel quantity  
-            let newDieselTotal = station.Diesel.avaiableTotalFuelAmount + req.body.diesel_arrived_quantity;
-            let newPetrolTotal = station.Petrol.avaiableTotalFuelAmount + req.body.petrol_arrived_quantity;
+            let newDieselTotal = parseInt(station.Diesel.avaiableTotalFuelAmount) + parseInt(req.body.diesel_arrived_quantity);
+            let newPetrolTotal = parseInt(station.Petrol.avaiableTotalFuelAmount) + parseInt(req.body.petrol_arrived_quantity);
 
             station.Diesel.avaiableTotalFuelAmount = newDieselTotal;
             station.Petrol.avaiableTotalFuelAmount = newPetrolTotal;
@@ -49,6 +49,7 @@ const updateFuelStationDetails = async (req, response) => {
             station.Diesel.arrivalTime = req.body.diesel_arrival_time;
             station.Diesel.arrivedQuantity = req.body.diesel_arrived_quantity;
             station.Diesel.finishingTime = req.body.diesel_finishing_time;
+
             station.Petrol.arrivalDate = req.body.petrol_arrival_date;
             station.Petrol.arrivalTime = req.body.petrol_arrival_time;
             station.Petrol.arrivedQuantity = req.body.petrol_arrived_quantity;
