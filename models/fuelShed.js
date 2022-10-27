@@ -26,6 +26,14 @@ const userSchema = new Schema({
         type: String,
         default: 'shed',
     },
+    isPetrol: {
+        type: Boolean,
+        required: true
+    },
+    isDiesel: {
+        type: Boolean,
+        required: true
+    },
     Diesel: {
         arrivalTime: {
             type: String,
