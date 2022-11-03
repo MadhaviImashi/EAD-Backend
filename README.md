@@ -26,4 +26,4 @@ npm start
 npm run build
 ```
 
-##### This Backend server is also hosted in Heroku Cloud service platform: 
+##### This Backend server is also hosted in Heroku Cloud service platform: https://eadfuelapp.herokuapp.com 
